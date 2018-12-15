@@ -14,20 +14,20 @@ def largest_area(coordinates):
         for x in range(*x_bounds):
             for y in range(*y_bounds):
                 curr_distance = distance(coord, (x, y))
-                claim = grid[(x, y)]
+                claim = grid[x, y]
                 if curr_distance < claim[1]:
-                    grid[(x, y)] = (i, curr_distance)
+                    grid[x, y] = (i, curr_distance)
                     area[i] += 1
                     area[claim[0]] -= 1
                 elif curr_distance == claim[1]:
-                    grid[(x, y)] = (None, curr_distance)
+                    grid[x, y] = (None, curr_distance)
                     area[claim[0]] -= 1
     for x in x_bounds[0], x_bounds[1] - 1:
         for y in range(*y_bounds):
-            infinites.add(grid[(x, y)][0])
+            infinites.add(grid[x, y][0])
     for y in y_bounds[0], y_bounds[1] - 1:
         for x in range(*x_bounds):
-            infinites.add(grid[(x, y)][0])
+            infinites.add(grid[x, y][0])
     return max(
         [(i, a) for i, a in area.items() if i not in infinites],
         key=(lambda x: x[1])

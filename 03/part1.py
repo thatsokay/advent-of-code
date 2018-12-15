@@ -13,9 +13,9 @@ def find_overlaps(rects):
     for _, (x1, y1), (x2, y2) in rects:
         for x in range(x1, x2):
             for y in range(y1, y2):
-                if fabric[(x, y)] == 1:
+                if fabric[x, y] == 1:
                     overlap_area += 1
-                fabric[(x, y)] += 1
+                fabric[x, y] += 1
     return fabric, overlap_area
 
 if __name__ == '__main__':
