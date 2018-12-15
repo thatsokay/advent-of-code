@@ -22,16 +22,6 @@ def time_taken(graph):
             graph.pop(step)
     return max(finish_times.items(), key=(lambda x: x[1]))[1]
 
-def find_order(graph):
-    order = []
-    while graph:
-        dependents = {d for ds in graph.values() for d in ds}
-        available = set(graph.keys()) - dependents
-        next_step = min(available)
-        order.append(next_step)
-        graph.pop(next_step)
-    return order
-
 if __name__ == '__main__':
     with open('input.txt') as f:
         arcs = [itemgetter(1, 7)(line.split()) for line in f.readlines()]
