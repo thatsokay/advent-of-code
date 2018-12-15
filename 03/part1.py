@@ -3,8 +3,8 @@ from collections import Counter
 def parse_claim(claim):
     parts = claim.split()
     claim_id = parts[0][1:]
-    x, y = map(lambda x: int(x), parts[2][:-1].split(','))
-    w, h = map(lambda x: int(x), parts[3].split('x'))
+    x, y = map(int, parts[2][:-1].split(','))
+    w, h = map(int, parts[3].split('x'))
     return (claim_id, (x, y), (x + w, y + h))
 
 def find_overlaps(rects):
