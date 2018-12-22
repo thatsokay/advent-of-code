@@ -12,5 +12,5 @@ def sum_meta(nums, pos):
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        nums = list(map(int, f.read().split()))
+        nums = [int(x) for x in f.read().split()]
         print(sum_meta(nums, 0))
