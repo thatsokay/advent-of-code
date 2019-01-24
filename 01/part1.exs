@@ -3,4 +3,3 @@ File.stream!("input.txt")
 |> Stream.map(&String.to_integer/1)
 |> Enum.sum
 |> IO.puts
-
