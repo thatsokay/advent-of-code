@@ -17,11 +17,13 @@ defmodule AoC02_2 do
   end
   def common(x, y) do
     Enum.zip(String.to_charlist(x), String.to_charlist(y))
-    |> Enum.filter(fn {c, d} ->
-      c === d
+    |> Enum.flat_map(fn {c, d} ->
+      if c === d do
+        [c]
+      else
+        []
+      end
     end)
-    |> Enum.unzip
-    |> elem(0)
   end
 end
 
