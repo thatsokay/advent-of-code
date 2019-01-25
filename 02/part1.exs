@@ -13,21 +13,20 @@ defmodule AoC02_1 do
     count(rest, counts)
   end
   def sum_counts(counts, acc) do
-    {_, acc} = Map.get_and_update(acc, 2, fn val ->
+    Map.update(acc, 2, 0, fn val ->
       if Enum.member?(Map.values(counts), 2) do
-        {val, val + 1}
+        val + 1
       else
-        {val, val}
+        val
       end
     end)
-    {_, acc} = Map.get_and_update(acc, 3, fn val ->
+    |> Map.update(3, 0, fn val ->
       if Enum.member?(Map.values(counts), 3) do
-        {val, val + 1}
+        val + 1
       else
-        {val, val}
+        val
       end
     end)
-    acc
   end
   def checksum(%{2 => two, 3 => three}) do
     two * three
