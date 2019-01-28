@@ -1,27 +1,30 @@
-def gen_grid(serial):
-    grid = {}
+from collections import Counter
+
+def cell_power(serial, x, y):
+    return (((x + 10) * y + serial) * (x + 10)) % 1000 // 100 - 5
+
+def gen_sat(serial):
+    sat = Counter()
     for x in range(1, 301):
         for y in range(1, 301):
-            rack_id = x + 10
-            grid[x, y] = ((rack_id * y + serial) * rack_id) % 1000 // 100 - 5
-    return grid
+            sat[x, y] = cell_power(serial, x, y) + sat[x, y - 1] + sat[x - 1, y] - sat[x - 1, y - 1]
+    return sat
 
-def square_power(grid, size):
-    power = {}
-    for x in range(1, 301 - size):
-        for y in range(1, 301 - size):
-            power[x, y] = sum([
-                grid[i, j]
-                for i in range(x, x + size)
-                for j in range(y, y + size)
-            ])
-    return power
+def square_sums(sat, size):
+    return (
+        (
+            (x + 1, y + 1, size),
+            sat[x + size, y + size] + sat[x, y] - sat[x + size, y] - sat[x, y + size]
+        )
+        for x in range(300 - size)
+        for y in range(300 - size)
+    )
 
 if __name__ == '__main__':
     with open('input.txt') as f:
         serial = int(f.read())
-    grid = gen_grid(serial)
+    sat = gen_sat(serial)
     print(max(
-        square_power(grid, 3).items(),
+        square_sums(sat, 3),
         key=(lambda x: x[1])
-    )[0])
+    )[0][:-1])
