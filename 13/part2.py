@@ -1,17 +1,17 @@
-from part1 import parse_tracks, move_cart, turn_cart
+from part1 import parse_tracks, turn_cart
 
 def last_cart(tracks, carts):
     while True:
-        for (x, y), (direction, turn) in sorted(carts.items()):
-            if (x, y) not in carts:
+        for coord, (direction, turn) in sorted(carts.items(), key=(lambda x: (x[0].imag, x[0].real))):
+            if coord not in carts:
                 continue
 
-            next_coord = move_cart(x, y, direction)
+            next_coord = coord + direction
             if carts.get(next_coord):
-                del carts[x, y]
+                del carts[coord]
                 del carts[next_coord]
             else:
-                del carts[x, y]
+                del carts[coord]
                 carts[next_coord] = turn_cart(direction, turn, tracks[next_coord])
 
         if len(carts) == 1:
