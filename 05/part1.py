@@ -1,17 +1,16 @@
 def react(polymer):
-    prevChar = None
-    for i, char in enumerate(polymer):
-        if char == prevChar:
-            return polymer[:i - 1] + polymer[i + 1:]
+    reacted = []
+    unit = polymer and polymer[0] or ''
+    for next_unit in polymer[1:]:
+        if unit == next_unit.swapcase():
+            unit = reacted and reacted.pop() or ''
         else:
-            prevChar = char.swapcase()
-    return None
+            reacted.append(unit)
+            unit = next_unit
+    reacted.append(unit)
+    return ''.join(reacted)
 
 if __name__ == '__main__':
     with open('input.txt') as f:
-        prev_polymer = f.read()[:-1]
-        next_polymer = react(prev_polymer)
-        while next_polymer is not None:
-            prev_polymer = next_polymer
-            next_polymer = react(prev_polymer)
-        print(len(prev_polymer))
+        polymer = f.read().strip()
+    print(len(react(polymer)))
