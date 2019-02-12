@@ -9,7 +9,7 @@ def find_opcodes(samples):
         if len(opcodes[instruction[0]]) == 1:
             for i in range(16):
                 if i != instruction[0]:
-                    opcodes[i] -= opcodes[instruction[0]]
+                    opcodes[i].difference_update(opcodes[instruction[0]])
     return {opcode: ops[names.pop()] for opcode, names in opcodes.items()}
 
 def run_program(opcodes, instructions):

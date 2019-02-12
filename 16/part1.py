@@ -28,11 +28,11 @@ def possible_ops(instruction, before, after):
     return {name for name, op in ops.items() if op(before, *instruction[1:]) == after}
 
 def count_threes(samples):
-    return sum((
+    return len([
         True
         for sample in samples
         if len(possible_ops(*parse_sample(sample))) >= 3
-    ))
+    ])
 
 if __name__ == '__main__':
     with open('input.txt') as f:
