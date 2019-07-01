@@ -34,6 +34,7 @@ def fill(reservoir, min_y, max_y):
         if below == '|':
             reservoir[coord] = '|'
         elif below == '#' or below == '~':
+            # Fill left side then right side
             left = reservoir.get(coord - 1)
             if left == '|':
                 reservoir[coord] = '|'
@@ -52,6 +53,10 @@ def fill(reservoir, min_y, max_y):
                     reservoir[coord] = '~'
                 else:
                     # Right is None
+                    #
+                    # + represents the state between | and ~. Water in the +
+                    # state is contained on the left side but not necessarily
+                    # contained on the right.
                     reservoir[coord] = '+'
                     # Fill right then resolve current
                     stack.extend([coord, coord + 1])
