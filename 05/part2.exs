@@ -2,8 +2,8 @@ Code.require_file("part1.exs")
 
 defmodule AoC05_2 do
   def improve(polymer) do
-    Stream.map(97..129, fn c ->
-      String.replace(polymer, ~r|#{<<c>>}|i, "", global: true)
+    Stream.map(?a..?z, fn c ->
+      String.replace(polymer, ~r/#{<<c>>}/i, "", global: true)
       |> AoC05_1.react
       |> String.length
     end)
