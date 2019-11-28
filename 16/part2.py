@@ -13,7 +13,7 @@ def find_opcodes(samples):
     return {opcode: ops[names.pop()] for opcode, names in opcodes.items()}
 
 def run_program(opcodes, instructions):
-    register = dict(enumerate((0, 0, 0, 0)))
+    register = {i: 0 for i in range(4)}
     for opcode, a, b, c in ([int(x) for x in instr.split()] for instr in instructions):
         register = opcodes[opcode](register, a, b, c)
     return register
