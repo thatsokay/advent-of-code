@@ -15,11 +15,11 @@ input = File.stream!("input.txt")
 |> Enum.map(&String.to_integer/1)
 
 input
-|> Stream.map(fn(mass) -> div(mass, 3) - 2 end)
+|> Stream.map(&(div(&1, 3) - 2))
 |> Enum.sum
 |> IO.puts
 
 input
-|> Stream.map(fn(x) -> AoC2019_01.fuel(x) end)
+|> Stream.map(&(AoC2019_01.fuel(&1)))
 |> Enum.sum
 |> IO.puts
