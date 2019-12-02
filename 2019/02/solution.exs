@@ -10,13 +10,15 @@ defmodule AoC2019_02 do
     case elem(intcode, ip) do
       1 ->
         intcode
-        |> operate(ip, &Kernel.+/2)
+        |> operate(ip, &+/2)
         |> run_ops(ip + 4)
       2 ->
         intcode
-        |> operate(ip, &Kernel.*/2)
+        |> operate(ip, &*/2)
         |> run_ops(ip + 4)
-      99 -> intcode
+      99 ->
+        intcode
+        |> elem(0)
     end
   end
 
@@ -41,15 +43,11 @@ input = File.stream!("input.txt")
 
 input
 |> AoC2019_02.run_intcode({12, 2})
-|> elem(0)
 |> IO.puts
 
-1..99
-|> Stream.flat_map(fn(i) -> Stream.map(1..99, fn(j) -> {i, j} end) end)
-|> Enum.find(fn(initial) ->
-  AoC2019_02.run_intcode(input, initial)
-  |> elem(0)
-  |> Kernel.===(19690720)
-end)
-|> (fn({noun, verb}) -> noun * 100 + verb end).()
-|> IO.puts
+{noun, verb} =
+  for noun <- 0..99, verb <- 0..99 do
+    {noun, verb}
+  end
+  |> Enum.find(&(AoC2019_02.run_intcode(input, &1) === 19690720))
+IO.puts(100 * noun + verb)
