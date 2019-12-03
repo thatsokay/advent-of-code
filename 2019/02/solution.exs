@@ -1,5 +1,24 @@
-defmodule AoC2019_02 do
-  def run_intcode(intcode, {noun, verb}) do
+defmodule AoC2019.Day02 do
+  def parse_input() do
+    File.stream!("input.txt")
+    |> Enum.at(0)
+    |> String.split(",")
+    |> Enum.map(&String.to_integer/1)
+    |> List.to_tuple()
+  end
+
+  def part1(input) do
+    run_intcode(input, {12, 2})
+  end
+
+  def part2(input) do
+    {noun, verb} =
+      for noun <- 0..99, verb <- 0..99 do {noun, verb} end
+      |> Enum.find(&(run_intcode(input, &1) === 19690720))
+    100 * noun + verb
+  end
+
+  defp run_intcode(intcode, {noun, verb}) do
     intcode
     |> put_elem(1, noun)
     |> put_elem(2, verb)
@@ -35,19 +54,12 @@ defmodule AoC2019_02 do
 end
 
 
-input = File.stream!("input.txt")
-|> Enum.at(0)
-|> String.split(",")
-|> Enum.map(&String.to_integer/1)
-|> List.to_tuple
+input = AoC2019.Day02.parse_input()
 
 input
-|> AoC2019_02.run_intcode({12, 2})
-|> IO.puts
+|> AoC2019.Day02.part1()
+|> IO.puts()
 
-{noun, verb} =
-  for noun <- 0..99, verb <- 0..99 do
-    {noun, verb}
-  end
-  |> Enum.find(&(AoC2019_02.run_intcode(input, &1) === 19690720))
-IO.puts(100 * noun + verb)
+input
+|> AoC2019.Day02.part2()
+|> IO.puts()

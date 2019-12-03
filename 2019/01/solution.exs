@@ -1,25 +1,42 @@
-defmodule AoC2019_01 do
-  def fuel(mass, acc \\ 0) do
-    if mass <= 6 do
-      acc
-    else
-      new_mass = div(mass, 3) - 2
-      fuel(new_mass, acc + new_mass)
-    end
+defmodule AoC2019.Day01 do
+  def parse_input() do
+    File.stream!("input.txt")
+    |> Stream.map(&String.trim/1)
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  def part1(input) do
+    input
+    |> Stream.map(&fuel/1)
+    |> Enum.sum()
+  end
+
+  def part2(input) do
+    input
+    |> Stream.map(&fuel_recursive/1)
+    |> Enum.sum()
+  end
+
+  defp fuel(mass) do
+    div(mass, 3) - 2
+  end
+
+  defp fuel_recursive(mass) do
+    mass
+    |> Stream.iterate(&fuel/1)
+    |> Stream.drop(1)
+    |> Stream.take_while(&(&1 > 0))
+    |> Enum.sum()
   end
 end
 
 
-input = File.stream!("input.txt")
-|> Stream.map(&String.trim/1)
-|> Enum.map(&String.to_integer/1)
+input = AoC2019.Day01.parse_input()
 
 input
-|> Stream.map(&(div(&1, 3) - 2))
-|> Enum.sum
-|> IO.puts
+|> AoC2019.Day01.part1()
+|> IO.puts()
 
 input
-|> Stream.map(&(AoC2019_01.fuel(&1)))
-|> Enum.sum
-|> IO.puts
+|> AoC2019.Day01.part2()
+|> IO.puts()

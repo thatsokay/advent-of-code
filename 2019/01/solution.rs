@@ -1,25 +1,35 @@
 use std::fs;
-
-fn fuel(mass: &i32) -> i32 {
-    let mut fuel_mass = *mass;
-    let mut total_fuel = 0;
-    while fuel_mass > 6 {
-        fuel_mass = fuel_mass / 3 - 2;
-        total_fuel += fuel_mass;
-    }
-    total_fuel
-}
+use std::iter::successors;
 
 fn main() {
-    let input: Vec<i32> = fs::read_to_string("input.txt")
-        .expect("Failed reading file")
+    let input = parse_input();
+    println!("{}", part1(&input));
+    println!("{}", part2(&input));
+}
+
+fn parse_input() -> Vec<i32> {
+    fs::read_to_string("input.txt")
+        .unwrap()
         .lines()
-        .map(|line| line.parse().expect("Failed parsing line into integer"))
-        .collect();
+        .map(|line| line.parse().unwrap())
+        .collect()
+}
 
-    let part1 = input.iter().fold(0, |acc, mass| acc + (mass / 3 - 2));
-    println!("{}", part1);
+fn part1(input: &Vec<i32>) -> i32 {
+    input.iter().fold(0, |acc, mass| acc + fuel(mass))
+}
 
-    let part2 = input.iter().fold(0, |acc, mass| acc + fuel(mass));
-    println!("{}", part2);
+fn part2(input: &Vec<i32>) -> i32 {
+    input.iter().fold(0, |acc, mass| acc + fuel_recursive(mass))
+}
+
+fn fuel(mass: &i32) -> i32 {
+    mass / 3 - 2
+}
+
+fn fuel_recursive(mass: &i32) -> i32 {
+    successors(Some(*mass), |mass| Some(fuel(mass)))
+        .skip(1)
+        .take_while(|mass| mass > &0)
+        .sum()
 }

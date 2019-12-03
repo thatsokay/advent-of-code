@@ -45,6 +45,7 @@ def trace_wire(wire):
             visited[position] = min(steps, visited[position])
     return visited
 
+
 wires = parse_input()
 print(part1(wires))
 print(part2(wires))
