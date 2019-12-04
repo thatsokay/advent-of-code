@@ -24,13 +24,13 @@ defmodule AoC2019.Day04 do
     |> Enum.count()
   end
 
-  def digits(guess) do
+  defp digits(guess) do
     guess
     |> to_charlist()
     |> Enum.map(&(&1 - ?0))
   end
 
-  def increasing?(digits) do
+  defp increasing?(digits) do
     increasing = digits
     |> Enum.reduce_while(0, fn(current, prev) ->
       if current < prev do
@@ -42,13 +42,13 @@ defmodule AoC2019.Day04 do
     increasing !== nil
   end
 
-  def double?(digits) do
+  defp double?(digits) do
     digits
     |> Stream.chunk_by(&(&1))
     |> Enum.any?(&(Enum.count(&1) >= 2))
   end
 
-  def double_strict?(digits) do
+  defp double_strict?(digits) do
     digits
     |> Stream.chunk_by(&(&1))
     |> Enum.any?(&(Enum.count(&1) === 2))
