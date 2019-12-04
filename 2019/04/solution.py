@@ -4,7 +4,6 @@ from collections import Counter
 def parse_input():
     with open('input.txt') as f:
         line = f.read()
-    # start, end = 128392, 643281
     start, end = map(int, line.split('-'))
     return list(map(digits, range(start, end + 1)))
 

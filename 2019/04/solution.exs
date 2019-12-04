@@ -60,8 +60,8 @@ input = AoC2019.Day04.parse_input()
 
 input
 |> AoC2019.Day04.part1()
-|> IO.puts
+|> IO.puts()
 
 input
 |> AoC2019.Day04.part2()
-|> IO.puts
+|> IO.puts()
