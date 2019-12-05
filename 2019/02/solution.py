@@ -30,7 +30,7 @@ def run_intcode(intcode, noun, verb):
     while True:
         if memory[ip] == 1:
             operate(add)
-        elif intcode[ip] == 2:
+        elif memory[ip] == 2:
             operate(mul)
         elif memory[ip] == 99:
             return memory[0]
