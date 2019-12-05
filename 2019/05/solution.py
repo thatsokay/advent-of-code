@@ -24,13 +24,13 @@ def run_intcode(intcode, first_input):
     def eval_params(param_modes, values):
         return (
             eval_param(mode, val)
-            for mode, val in zip(param_modes, memory[ip + 1:ip + 3])
+            for mode, val in zip(param_modes, values)
         )
 
     while True:
         instruction = str(memory[ip])
         opcode = int(instruction[-2:])
-        param_modes = instruction[:-2][::-1].ljust(3, '0')
+        param_modes = instruction[:-2][::-1].ljust(5, '0')
 
         if opcode == 1:
             a, b = eval_params(param_modes, memory[ip + 1: ip + 3])
