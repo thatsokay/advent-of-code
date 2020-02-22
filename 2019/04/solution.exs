@@ -31,15 +31,9 @@ defmodule AoC2019.Day04 do
   end
 
   defp increasing?(digits) do
-    increasing = digits
-    |> Enum.reduce_while(0, fn(current, prev) ->
-      if current < prev do
-        {:halt, nil}
-      else
-        {:cont, current}
-      end
-    end)
-    increasing !== nil
+    digits
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.all?(fn([a, b]) -> a <= b end)
   end
 
   defp double?(digits) do

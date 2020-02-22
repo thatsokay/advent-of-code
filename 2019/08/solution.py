@@ -25,13 +25,6 @@ def part2(pixels):
         for i in range(6)
     )
 
-def part2_2(pixels):
-    stacked = (
-        itemgetter(*range(offset, len(pixels), 25 * 6))(pixels)
-        for offset in range(25 * 6)
-    )
-
-
 
 pixels = parse_input()
 print(part1(pixels))
