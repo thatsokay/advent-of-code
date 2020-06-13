@@ -1,10 +1,11 @@
 defmodule AoC2019.Day04 do
   def parse_input() do
-    {start, finish} = File.stream!("input.txt")
-    |> Enum.at(0)
-    |> String.split("-")
-    |> Enum.map(&String.to_integer/1)
-    |> List.to_tuple()
+    {start, finish} =
+      File.stream!("input.txt")
+      |> Enum.at(0)
+      |> String.split("-")
+      |> Enum.map(&String.to_integer/1)
+      |> List.to_tuple()
 
     start..finish
     |> Enum.map(&digits/1)
@@ -33,22 +34,21 @@ defmodule AoC2019.Day04 do
   defp increasing?(digits) do
     digits
     |> Enum.chunk_every(2, 1, :discard)
-    |> Enum.all?(fn([a, b]) -> a <= b end)
+    |> Enum.all?(fn [a, b] -> a <= b end)
   end
 
   defp double?(digits) do
     digits
-    |> Stream.chunk_by(&(&1))
+    |> Stream.chunk_by(& &1)
     |> Enum.any?(&(Enum.count(&1) >= 2))
   end
 
   defp double_strict?(digits) do
     digits
-    |> Stream.chunk_by(&(&1))
+    |> Stream.chunk_by(& &1)
     |> Enum.any?(&(Enum.count(&1) === 2))
   end
 end
-
 
 input = AoC2019.Day04.parse_input()
 

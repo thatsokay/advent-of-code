@@ -13,8 +13,11 @@ defmodule AoC2019.Day02 do
 
   def part2(input) do
     {noun, verb} =
-      for noun <- 0..99, verb <- 0..99 do {noun, verb} end
-      |> Enum.find(&(run_intcode(input, &1) === 19690720))
+      for noun <- 0..99, verb <- 0..99 do
+        {noun, verb}
+      end
+      |> Enum.find(&(run_intcode(input, &1) === 19_690_720))
+
     100 * noun + verb
   end
 
@@ -31,10 +34,12 @@ defmodule AoC2019.Day02 do
         intcode
         |> operate(ip, &+/2)
         |> run_ops(ip + 4)
+
       2 ->
         intcode
         |> operate(ip, &*/2)
         |> run_ops(ip + 4)
+
       99 ->
         intcode
         |> elem(0)
@@ -52,7 +57,6 @@ defmodule AoC2019.Day02 do
     )
   end
 end
-
 
 input = AoC2019.Day02.parse_input()
 

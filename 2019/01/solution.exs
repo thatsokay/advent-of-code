@@ -30,7 +30,6 @@ defmodule AoC2019.Day01 do
   end
 end
 
-
 input = AoC2019.Day01.parse_input()
 
 input
