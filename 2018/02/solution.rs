@@ -33,7 +33,7 @@ fn part1(input: &Vec<String>) -> i32 {
 fn part2(input: &Vec<String>) -> Option<String> {
     let input_len = input.len();
     for i in 0..input_len {
-        for j in i..input_len {
+        for j in i + 1..input_len {
             let common = common_chars(&input[i], &input[j]);
             if common.len() == input[i].len() - 1 {
                 return Some(common);
