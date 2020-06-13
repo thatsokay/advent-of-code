@@ -22,8 +22,8 @@ fn part1(input: &Vec<i32>) -> i32 {
 fn part2(input: &Vec<i32>) -> Option<i32> {
     let mut cumulative = 0;
     let mut seen = HashSet::new();
-    for delta in input.iter().cycle() {
-        cumulative += delta;
+    for frequency in input.iter().cycle() {
+        cumulative += frequency;
         if seen.contains(&cumulative) {
             return Some(cumulative);
         }
