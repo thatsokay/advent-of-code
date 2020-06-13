@@ -24,26 +24,6 @@ fn parse_input() -> (Wire, Wire) {
     (wires.next().unwrap(), wires.next().unwrap())
 }
 
-fn trace_wire<T: Iterator<Item = (String, i32)>>(wire: T) -> Wire {
-    let mut visited = HashMap::new();
-    let mut position = (0, 0);
-    let mut steps = 0;
-    for (direction, distance) in wire {
-        for _ in 0..distance {
-            match &direction[..] {
-                "U" => position.1 += 1,
-                "D" => position.1 -= 1,
-                "L" => position.0 -= 1,
-                "R" => position.0 += 1,
-                _ => (),
-            }
-            steps += 1;
-            visited.insert(position, steps);
-        }
-    }
-    return visited;
-}
-
 fn part1((wire1, wire2): &(Wire, Wire)) -> i32 {
     let keys1: HashSet<(i32, i32)> = wire1.keys().cloned().collect();
     let keys2: HashSet<(i32, i32)> = wire2.keys().cloned().collect();
@@ -62,4 +42,24 @@ fn part2((wire1, wire2): &(Wire, Wire)) -> i32 {
         .map(|coordinate| wire1[coordinate] + wire2[coordinate])
         .min()
         .unwrap()
+}
+
+fn trace_wire<T: Iterator<Item = (String, i32)>>(wire: T) -> Wire {
+    let mut visited = HashMap::new();
+    let mut position = (0, 0);
+    let mut steps = 0;
+    for (direction, distance) in wire {
+        for _ in 0..distance {
+            match &direction[..] {
+                "U" => position.1 += 1,
+                "D" => position.1 -= 1,
+                "L" => position.0 -= 1,
+                "R" => position.0 += 1,
+                _ => (),
+            }
+            steps += 1;
+            visited.insert(position, steps);
+        }
+    }
+    return visited;
 }
