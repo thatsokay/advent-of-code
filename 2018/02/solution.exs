@@ -29,11 +29,7 @@ defmodule AoC2018.Day02 do
         if Enum.count(common) === match_length, do: common
       end)
 
-    if match do
-      match
-    else
-      part2(t)
-    end
+    match || part2(t)
   end
 
   defp has_2_and_3_of_kind(id) do
