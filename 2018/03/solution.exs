@@ -1,21 +1,20 @@
 defmodule AoC2018.Day03 do
   def parse_input() do
-    File.stream!("input.txt")
-    |> Stream.map(&String.trim/1)
-    |> Enum.map(&parse_claim/1)
+    rectangles =
+      File.stream!("input.txt")
+      |> Stream.map(&String.trim/1)
+      |> Enum.map(&parse_claim/1)
+
+    {rectangles, count_overlaps(rectangles)}
   end
 
-  def part1(input) do
-    input
-    |> overlaps()
-    |> Enum.count(fn {_, count} -> count > 1 end)
+  def part1({rectangles, overlaps}) do
+    Enum.count(overlaps, fn {_, count} -> count > 1 end)
   end
 
-  def part2(input) do
-    overlap_map = overlaps(input)
-
-    Enum.reduce_while(input, nil, fn rectangle, _ ->
-      if unique?(rectangle, overlap_map) do
+  def part2({rectangles, overlaps}) do
+    Enum.reduce_while(rectangles, nil, fn rectangle, _ ->
+      if unique?(rectangle, overlaps) do
         {:halt, elem(rectangle, 0)}
       else
         {:cont, nil}
@@ -31,25 +30,26 @@ defmodule AoC2018.Day03 do
     |> List.to_tuple()
   end
 
-  defp overlaps(rectangles) do
-    Enum.reduce(rectangles, %{}, fn {_id, x, y, w, h}, acc ->
-      Enum.reduce(x..(x + w - 1), acc, fn i, acc_x ->
-        Enum.reduce(y..(y + h - 1), acc_x, fn j, acc_y ->
-          Map.update(acc_y, {i, j}, 1, &(&1 + 1))
-        end)
-      end)
-    end)
+  defp count_overlaps(rectangles) do
+    for {_id, x, y, w, h} <- rectangles,
+        i <- x..(x + w - 1),
+        j <- y..(y + h - 1) do
+      {i, j}
+    end
+    |> Enum.frequencies()
   end
 
   defp unique?({_id, x, y, w, h}, overlaps) do
-    Enum.reduce_while(x..(x + w - 1), nil, fn i, _ ->
-      Enum.reduce_while(y..(y + h - 1), nil, fn j, _ ->
-        if Map.fetch!(overlaps, {i, j}) > 1 do
-          {:halt, {:halt, false}}
-        else
-          {:cont, {:cont, true}}
-        end
-      end)
+    for i <- x..(x + w - 1),
+        j <- y..(y + h - 1) do
+      {i, j}
+    end
+    |> Enum.reduce_while(nil, fn coord, _ ->
+      if Map.fetch!(overlaps, coord) > 1 do
+        {:halt, false}
+      else
+        {:cont, true}
+      end
     end)
   end
 end
