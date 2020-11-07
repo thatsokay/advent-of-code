@@ -10,10 +10,10 @@ fn main() {
     println!("{}", part2(&input));
 }
 
-fn parse_input() -> (Wire, Wire) {
+fn parse_input() -> (Wire, Wire, Vec<Coordinate>) {
     let input = fs::read_to_string("input.txt").unwrap();
     let mut wires = input
-        .split("\n")
+        .lines()
         .map(|line| {
             line.split(",").map(|segment| {
                 let (direction, distance) = segment.split_at(1);
@@ -21,24 +21,25 @@ fn parse_input() -> (Wire, Wire) {
             })
         })
         .map(|wire| trace_wire(wire));
-    (wires.next().unwrap(), wires.next().unwrap())
+    let wire1 = wires.next().unwrap();
+    let wire2 = wires.next().unwrap();
+    let keys1: HashSet<Coordinate> = wire1.keys().cloned().collect();
+    let keys2: HashSet<Coordinate> = wire2.keys().cloned().collect();
+    let intersections = keys1.intersection(&keys2).cloned().collect();
+    (wire1, wire2, intersections)
 }
 
-fn part1((wire1, wire2): &(Wire, Wire)) -> i32 {
-    let keys1: HashSet<(i32, i32)> = wire1.keys().cloned().collect();
-    let keys2: HashSet<(i32, i32)> = wire2.keys().cloned().collect();
-    keys1
-        .intersection(&keys2)
+fn part1((_, _, intersections): &(Wire, Wire, Vec<Coordinate>)) -> i32 {
+    intersections
+        .iter()
         .map(|(x, y)| x.abs() + y.abs())
         .min()
         .unwrap()
 }
 
-fn part2((wire1, wire2): &(Wire, Wire)) -> i32 {
-    let keys1: HashSet<(i32, i32)> = wire1.keys().cloned().collect();
-    let keys2: HashSet<(i32, i32)> = wire2.keys().cloned().collect();
-    keys1
-        .intersection(&keys2)
+fn part2((wire1, wire2, intersections): &(Wire, Wire, Vec<Coordinate>)) -> i32 {
+    intersections
+        .iter()
         .map(|coordinate| wire1[coordinate] + wire2[coordinate])
         .min()
         .unwrap()
