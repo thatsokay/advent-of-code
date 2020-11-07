@@ -1,4 +1,4 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 use std::fs;
 
 type Rectangle = (i32, i32, i32, i32, i32);
@@ -37,7 +37,7 @@ fn part1((_rectangles, layer_map): &(Vec<Rectangle>, LayerMap)) -> i32 {
 fn part2((rectangles, layer_map): &(Vec<Rectangle>, LayerMap)) -> i32 {
     for rectangle in rectangles {
         if is_unique(rectangle, layer_map) {
-            return rectangle.0
+            return rectangle.0;
         }
     }
     -1
@@ -63,7 +63,7 @@ fn is_unique(rectangle: &Rectangle, layer_map: &LayerMap) -> bool {
     for i in *x..(*x + *w) {
         for j in *y..(*y + *h) {
             if layer_map.get(&(i, j)).unwrap() > &1 {
-                return false
+                return false;
             }
         }
     }
