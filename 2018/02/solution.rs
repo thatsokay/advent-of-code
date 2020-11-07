@@ -10,7 +10,7 @@ fn main() {
 fn parse_input() -> Vec<String> {
     fs::read_to_string("input.txt")
         .unwrap()
-        .split("\n")
+        .lines()
         .map(|line| line.to_string())
         .collect()
 }

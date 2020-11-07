@@ -13,8 +13,7 @@ fn main() {
 fn parse_input() -> (Vec<Rectangle>, LayerMap) {
     let rectangles = fs::read_to_string("input.txt")
         .unwrap()
-        .trim()
-        .split("\n")
+        .lines()
         .map(|line| -> Rectangle {
             let values: Vec<&str> = line.split(&[' ', '#', ',', ':', 'x'][..]).collect();
             (
