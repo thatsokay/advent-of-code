@@ -39,14 +39,14 @@ fn part2((rectangles, layer_map): &(Vec<Rectangle>, LayerMap)) -> i32 {
             return rectangle.0;
         }
     }
-    -1
+    panic!()
 }
 
 fn count_layers(rectangles: &Vec<Rectangle>) -> LayerMap {
     let mut layers = HashMap::new();
-    for (_id, x, y, w, h) in rectangles {
-        for i in *x..(*x + *w) {
-            for j in *y..(*y + *h) {
+    for &(_id, x, y, w, h) in rectangles {
+        for i in x..(x + w) {
+            for j in y..(y + h) {
                 layers
                     .entry((i, j))
                     .and_modify(|count| *count += 1)
@@ -58,9 +58,9 @@ fn count_layers(rectangles: &Vec<Rectangle>) -> LayerMap {
 }
 
 fn is_unique(rectangle: &Rectangle, layer_map: &LayerMap) -> bool {
-    let (_id, x, y, w, h) = rectangle;
-    for i in *x..(*x + *w) {
-        for j in *y..(*y + *h) {
+    let &(_id, x, y, w, h) = rectangle;
+    for i in x..(x + w) {
+        for j in y..(y + h) {
             if layer_map.get(&(i, j)).unwrap() > &1 {
                 return false;
             }
