@@ -3,7 +3,7 @@ use std::fs;
 fn main() {
     let input = parse_input();
     println!("{}", part1(&input));
-    println!("{}", part2(&input).unwrap());
+    println!("{}", part2(&input));
 }
 
 fn parse_input() -> Vec<i32> {
@@ -18,15 +18,15 @@ fn part1(input: &Vec<i32>) -> i32 {
     run_intcode(input, 12, 2)
 }
 
-fn part2(input: &Vec<i32>) -> Option<i32> {
+fn part2(input: &Vec<i32>) -> i32 {
     for noun in 1..100 {
         for verb in 1..100 {
             if run_intcode(input, noun, verb) == 19690720 {
-                return Some(100 * noun + verb);
+                return 100 * noun + verb;
             }
         }
     }
-    return None;
+    panic!()
 }
 
 fn run_intcode(intcode: &Vec<i32>, noun: i32, verb: i32) -> i32 {

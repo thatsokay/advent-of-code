@@ -4,7 +4,7 @@ use std::fs;
 fn main() {
     let input = parse_input();
     println!("{}", part1(&input));
-    println!("{}", part2(&input).unwrap());
+    println!("{}", part2(&input));
 }
 
 fn parse_input() -> Vec<String> {
@@ -30,17 +30,17 @@ fn part1(input: &Vec<String>) -> i32 {
     twos * threes
 }
 
-fn part2(input: &Vec<String>) -> Option<String> {
+fn part2(input: &Vec<String>) -> String {
     let input_len = input.len();
     for i in 0..input_len {
         for j in i + 1..input_len {
             let common = common_chars(&input[i], &input[j]);
             if common.len() == input[i].len() - 1 {
-                return Some(common);
+                return common;
             }
         }
     }
-    None
+    panic!()
 }
 
 fn has_2_and_3_of_kind(id: &String) -> (bool, bool) {
