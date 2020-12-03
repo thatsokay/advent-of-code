@@ -13,11 +13,9 @@ defmodule AoC2018.Day03 do
   end
 
   def part2({rectangles, layers}) do
-    Enum.reduce_while(rectangles, nil, fn rectangle, _ ->
+    Enum.find_value(rectangles, fn rectangle ->
       if unique?(rectangle, layers) do
-        {:halt, elem(rectangle, 0)}
-      else
-        {:cont, nil}
+        elem(rectangle, 0)
       end
     end)
   end
@@ -44,13 +42,8 @@ defmodule AoC2018.Day03 do
         j <- y..(y + h - 1) do
       {i, j}
     end
-    |> Enum.reduce_while(nil, fn coord, _ ->
-      if Map.fetch!(layers, coord) > 1 do
-        {:halt, false}
-      else
-        {:cont, true}
-      end
-    end)
+    |> Enum.find_value(fn coord -> Map.fetch!(layers, coord) > 1 end)
+    |> Kernel.!()
   end
 end
 
