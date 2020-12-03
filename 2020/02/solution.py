@@ -19,7 +19,7 @@ def part2(inputs):
     for (positions, letter), password in inputs:
         c1 = password[positions[0] - 1]
         c2 = password[positions[1] - 1]
-        if ((c1 == letter or c2 == letter) and c1 != c2):
+        if (c1 == letter) ^ (c2 == letter):
             valid_count += 1
     return valid_count
 
