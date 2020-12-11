@@ -7,19 +7,12 @@ def part1(inputs):
     return max(inputs)
 
 def part2(inputs):
-    seat_0 = None
-    seat_1 = None
-    for i in range(2 ** 10):
-        seat_2 = i in inputs
-        if (seat_0, seat_1, seat_2) == (True, False, True):
-            return i - 1
-        seat_0 = seat_1
-        seat_1 = seat_2
+    all_seats = set(range(min(inputs), max(inputs)))
+    return (all_seats - inputs).pop()
 
 def seat_id(seat):
-    row_binary = ''.join('0' if c == 'F' else '1' for c in seat[:7])
-    col_binary = ''.join('0' if c == 'L' else '1' for c in seat[7:])
-    return int(row_binary, 2) * 8 + int(col_binary, 2)
+    seat_binary = seat.replace('F', '0').replace('B', '1').replace('L', '0').replace('R', '1')
+    return int(seat_binary, 2)
 
 
 inputs = parse_input()
