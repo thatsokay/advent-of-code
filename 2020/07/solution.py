@@ -12,11 +12,11 @@ def part1(inputs):
         for child in children.keys():
             bags[child].append(colour)
 
-    def count_ancestors(colour):
+    def ancestors(colour):
         parents = bags[colour]
-        return set(parents).union(*map(count_ancestors, parents))
+        return set(parents).union(*map(ancestors, parents))
 
-    return len(count_ancestors('shiny gold'))
+    return len(ancestors('shiny gold'))
 
 def part2(inputs):
     bags = {colour: children for colour, children in inputs}
