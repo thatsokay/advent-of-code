@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import combinations, accumulate
 
 
 def parse_input():
@@ -13,10 +13,11 @@ def part1(inputs):
 
 def part2(inputs):
     target = part1(inputs)
-    for i in range(len(inputs)):
-        for j in range(i + 2, len(inputs)):
-            contiguous = inputs[i:j]
-            if sum(contiguous) == target:
+    prefix_sum = list(accumulate(inputs))
+    for upper in range(2, len(inputs)):
+        for lower in range(upper - 1):
+            if prefix_sum[upper] - prefix_sum[lower] == target:
+                contiguous = inputs[lower:upper + 1]
                 return min(contiguous) + max(contiguous)
 
 def valid_xmas(numbers):
