@@ -1,5 +1,4 @@
 use std::fs;
-use std::iter::once;
 
 fn main() {
     let input = parse_input();
@@ -18,19 +17,13 @@ fn parse_input() -> Vec<i32> {
 fn part1(input: &[i32]) -> i32 {
     input
         .windows(2)
-        .filter(|window| window[1] > window[0])
+        .filter(|window| window[0] < window[1])
         .count() as i32
 }
 
 fn part2(input: &[i32]) -> i32 {
-    let cumsum: Vec<i32> = once(&0)
-        .chain(input.iter())
-        .scan(0, |acc, &x| {
-            *acc = *acc + x;
-            Some(*acc)
-        })
-        .collect();
-    (4..cumsum.len())
-        .filter(|&i| cumsum[i] - cumsum[i - 3] > cumsum[i - 1] - cumsum[i - 4])
+    input
+        .windows(4)
+        .filter(|window| window[0] < window[3])
         .count() as i32
 }
