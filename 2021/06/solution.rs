@@ -1,5 +1,6 @@
-use std::collections::HashMap;
 use std::fs;
+
+type FishCounts = [u64; 9];
 
 fn main() {
     let input = parse_input();
@@ -7,52 +8,30 @@ fn main() {
     println!("{}", part2(&input));
 }
 
-fn parse_input() -> Vec<u32> {
+fn parse_input() -> FishCounts {
+    let mut fish_counts: FishCounts = [0; 9];
     fs::read_to_string("input.txt")
         .unwrap()
         .trim()
         .split(',')
-        .map(|fish| fish.parse().unwrap())
-        .collect()
+        .map(|days| days.parse::<usize>().unwrap())
+        .for_each(|days| fish_counts[days] += 1);
+    fish_counts
 }
 
-fn part1(input: &[u32]) -> u64 {
-    let descendant_count = descendant_count_after_days(80);
-    input
-        .iter()
-        .map(|&fish| descendant_count.get(&fish).unwrap())
-        .sum()
+fn part1(input: &FishCounts) -> u64 {
+    breed_fish(input, 80)
 }
 
-fn part2(input: &[u32]) -> u64 {
-    let descendant_count = descendant_count_after_days(256);
-    input
-        .iter()
-        .map(|&fish| descendant_count.get(&fish).unwrap())
-        .sum()
+fn part2(input: &FishCounts) -> u64 {
+    breed_fish(input, 256)
 }
 
-fn descendant_count_after_days(days: u32) -> HashMap<u32, u64> {
-    fn count_fish(fish: u32, days: u32, memoised: &mut HashMap<(u32, u32), u64>) -> u64 {
-        if let Some(&memoised_value) = memoised.get(&(fish, days)) {
-            return memoised_value;
-        }
-        let count = match (fish, days) {
-            (_, 0) => 1,
-            (0, _) => count_fish(6, days - 1, memoised) + count_fish(8, days - 1, memoised),
-            _ => count_fish(fish - 1, days - 1, memoised),
-        };
-        memoised.insert((fish, days), count);
-        count
+fn breed_fish(counts: &FishCounts, days: u32) -> u64 {
+    let mut result = counts.clone();
+    for _ in 0..days {
+        result.rotate_left(1);
+        result[6] += result[8];
     }
-
-    let mut memoised: HashMap<(u32, u32), u64> = HashMap::new();
-    for fish in 0..=6 {
-        count_fish(fish, days, &mut memoised);
-    }
-    memoised
-        .iter()
-        .filter(|((_, memoised_days), _)| *memoised_days == days)
-        .map(|((fish, _), count)| (*fish, *count))
-        .collect()
+    result.iter().sum()
 }
