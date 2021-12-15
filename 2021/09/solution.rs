@@ -26,15 +26,15 @@ fn part1(input: &Cave) -> u32 {
     input
         .iter()
         .filter_map(|(&(i, j), height)| {
-            let left = input.get(&(i, j - 1)).or(Some(&10));
-            let right = input.get(&(i, j + 1)).or(Some(&10));
-            let up = input.get(&(i - 1, j)).or(Some(&10));
-            let down = input.get(&(i + 1, j)).or(Some(&10));
-            match (left, right, up, down) {
-                (Some(a), Some(b), Some(c), Some(d)) if height < a.min(b).min(c).min(d) => {
-                    Some(height)
-                }
-                _ => None,
+            let lowest_adjacent = [(i, j - 1), (i, j + 1), (i - 1, j), (i + 1, j)]
+                .iter()
+                .map(|coord| input.get(coord).unwrap_or(&10))
+                .reduce(|acc, adj_height| acc.min(adj_height))
+                .unwrap();
+            if height < lowest_adjacent {
+                Some(height)
+            } else {
+                None
             }
         })
         .map(|&height| height as u32 + 1)
@@ -46,7 +46,7 @@ fn part2(input: &Cave) -> i32 {
     let mut remaining: HashSet<(i32, i32)> = input
         .iter()
         .filter(|(_, &height)| height < 9)
-        .map(|(coords, _)| coords.clone())
+        .map(|(coord, _)| coord.clone())
         .collect();
     while !remaining.is_empty() {
         let mut basin: HashSet<(i32, i32)> = HashSet::new();

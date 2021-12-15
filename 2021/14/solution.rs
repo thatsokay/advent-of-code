@@ -22,11 +22,11 @@ fn parse_input() -> Polymerise {
     let rules: Rules = rules_raw
         .lines()
         .map(|line| {
-            let (pattern, insert) = line.split_once(" -> ").unwrap();
-            let pattern_chars: Vec<char> = pattern.chars().collect();
+            let (pair, created) = line.split_once(" -> ").unwrap();
+            let pair_chars: Vec<char> = pair.chars().collect();
             (
-                [pattern_chars[0], pattern_chars[1]],
-                insert.chars().next().unwrap(),
+                [pair_chars[0], pair_chars[1]],
+                created.chars().next().unwrap(),
             )
         })
         .collect();
