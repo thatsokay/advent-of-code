@@ -12,20 +12,14 @@ enum Cell {
 type Cells = [Cell; BOARD_SIZE.pow(2)];
 
 #[derive(Clone, Debug)]
-struct Board {
-    cells: Cells,
-}
+struct Board(Cells);
 
 impl Board {
-    fn new(cells: Cells) -> Self {
-        Board { cells: cells }
-    }
-
     fn mark_number(&mut self, number: u32) {
-        for i in 0..self.cells.len() {
-            match self.cells[i] {
+        for i in 0..self.0.len() {
+            match self.0[i] {
                 Cell::Unmarked(x) if x == number => {
-                    self.cells[i] = Cell::Marked(x);
+                    self.0[i] = Cell::Marked(x);
                     return;
                 }
                 Cell::Marked(x) if x == number => return,
@@ -38,23 +32,23 @@ impl Board {
         (0..BOARD_SIZE)
             .map(|i| {
                 (0..BOARD_SIZE)
-                    .map(|j| self.cells[BOARD_SIZE * i + j])
+                    .map(|j| self.0[BOARD_SIZE * i + j])
                     .all(|cell| match cell {
                         Cell::Marked(_) => true,
                         Cell::Unmarked(_) => false,
                     })
-                    || (0..BOARD_SIZE).map(|j| self.cells[BOARD_SIZE * j + i]).all(
-                        |cell| match cell {
+                    || (0..BOARD_SIZE)
+                        .map(|j| self.0[BOARD_SIZE * j + i])
+                        .all(|cell| match cell {
                             Cell::Marked(_) => true,
                             Cell::Unmarked(_) => false,
-                        },
-                    )
+                        })
             })
             .any(|col_is_marked| col_is_marked)
     }
 
     fn score(&self, multiplier: u32) -> u32 {
-        self.cells.iter().fold(0, |acc, cell| {
+        self.0.iter().fold(0, |acc, cell| {
             if let Cell::Unmarked(x) = cell {
                 acc + x
             } else {
@@ -82,7 +76,7 @@ fn parse_input() -> (Vec<u32>, Vec<Board>) {
                 .split_whitespace()
                 .enumerate()
                 .for_each(|(i, x)| cells[i] = Cell::Unmarked(x.parse().unwrap()));
-            Board::new(cells)
+            Board(cells)
         })
         .collect();
     (numbers, boards)
@@ -90,11 +84,7 @@ fn parse_input() -> (Vec<u32>, Vec<Board>) {
 
 fn part1(input: &(Vec<u32>, Vec<Board>)) -> u32 {
     let numbers = &input.0;
-    let boards: Vec<Board> = input
-        .1
-        .iter()
-        .map(|board| Board::new(board.cells.clone()))
-        .collect();
+    let boards: Vec<Board> = input.1.iter().map(|board| board.clone()).collect();
     numbers
         .iter()
         .scan(boards, |acc_boards, &number| {
@@ -114,11 +104,7 @@ fn part1(input: &(Vec<u32>, Vec<Board>)) -> u32 {
 
 fn part2(input: &(Vec<u32>, Vec<Board>)) -> u32 {
     let numbers = &input.0;
-    let boards: Vec<Board> = input
-        .1
-        .iter()
-        .map(|board| Board::new(board.cells.clone()))
-        .collect();
+    let boards: Vec<Board> = input.1.iter().map(|board| board.clone()).collect();
     numbers
         .iter()
         .scan(boards, |acc_boards, &number| {

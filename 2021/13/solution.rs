@@ -46,38 +46,36 @@ fn parse_input() -> Paper {
 }
 
 fn part1(input: &Paper) -> u32 {
-    fold_paper(input, 1).len() as u32
+    fold_paper(&input.dots, &input.folds[..1]).len() as u32
 }
 
 fn part2(input: &Paper) -> String {
-    display_dots(&fold_paper(input, 9999))
+    display_dots(&fold_paper(&input.dots, &input.folds))
 }
 
-fn fold_paper(paper: &Paper, folds: usize) -> Dots {
-    let mut result = paper.dots.clone();
-    for fold in paper.folds.iter().take(folds) {
+fn fold_paper(dots: &Dots, folds: &[Fold]) -> Dots {
+    let mut result = dots.clone();
+
+    let mut flip_dots = |axis: usize, midpoint: i32| {
+        let to_flip: Vec<_> = result
+            .iter()
+            .filter(|&coord| coord[axis] > midpoint)
+            .map(|dot| dot.clone())
+            .collect();
+        for mut coord in to_flip {
+            result.remove(&coord);
+            coord[axis] = ((coord[axis] - midpoint) * -1) + midpoint;
+            result.insert(coord);
+        }
+    };
+
+    for fold in folds {
         match fold {
             Fold::X(midpoint) => {
-                let flip_dots: Vec<_> = result
-                    .iter()
-                    .filter(|&[x, _]| x > midpoint)
-                    .map(|dot| dot.clone())
-                    .collect();
-                for [x, y] in flip_dots {
-                    result.remove(&[x, y]);
-                    result.insert([((x - midpoint) * -1) + midpoint, y]);
-                }
+                flip_dots(0, *midpoint);
             }
             Fold::Y(midpoint) => {
-                let flip_dots: Vec<_> = result
-                    .iter()
-                    .filter(|&[_, y]| y >= midpoint)
-                    .map(|dot| dot.clone())
-                    .collect();
-                for [x, y] in flip_dots {
-                    result.remove(&[x, y]);
-                    result.insert([x, ((y - midpoint) * -1) + midpoint]);
-                }
+                flip_dots(1, *midpoint);
             }
         }
     }
