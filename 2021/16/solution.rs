@@ -37,21 +37,20 @@ fn parse_packet(transmission: &str) -> Packet {
     cursor += 3;
     if type_id == 4 {
         let mut value: u64 = 0;
-        while &transmission[cursor..(cursor + 1)] == "1" {
+        loop {
+            let continue_parsing = &transmission[cursor..(cursor + 1)] == "1";
             cursor += 1;
-            value *= 16;
+            value = value << 4;
             value += u64::from_str_radix(&transmission[cursor..(cursor + 4)], 2).unwrap();
             cursor += 4;
+            if !continue_parsing {
+                return Packet {
+                    len: cursor,
+                    version_sum,
+                    value,
+                };
+            }
         }
-        cursor += 1;
-        value *= 16;
-        value += u64::from_str_radix(&transmission[cursor..(cursor + 4)], 2).unwrap();
-        cursor += 4;
-        return Packet {
-            len: cursor,
-            version_sum,
-            value,
-        };
     }
     let length_type_id = &transmission[cursor..(cursor + 1)];
     cursor += 1;
@@ -84,7 +83,7 @@ fn parse_packet(transmission: &str) -> Packet {
     }
     let value = match type_id {
         0 => sub_packet_values.into_iter().sum(),
-        1 => sub_packet_values.into_iter().fold(1, |acc, val| acc * val),
+        1 => sub_packet_values.into_iter().product(),
         2 => sub_packet_values.into_iter().min().unwrap(),
         3 => sub_packet_values.into_iter().max().unwrap(),
         5 => (sub_packet_values[0] > sub_packet_values[1]) as u64,
