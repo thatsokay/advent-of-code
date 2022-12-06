@@ -1,9 +1,102 @@
 use std::fs;
 
 struct Packet {
-    len: usize,
-    version_sum: u32,
+    version_sum: u64,
     value: u64,
+}
+
+struct Bits<'a> {
+    message: &'a [u8],
+    cursor: usize,
+}
+
+impl<'a> Bits<'a> {
+    fn new(message: &'a [u8]) -> Self {
+        Self { message, cursor: 0 }
+    }
+
+    fn read(&mut self, length: usize) -> u64 {
+        let start_byte_index = self.cursor / 8;
+        let start_bit_index = self.cursor % 8;
+        let end_byte_index = (self.cursor + length) / 8;
+        let end_bit_index = (self.cursor + length) % 8;
+
+        let mut value;
+        if start_byte_index < end_byte_index {
+            value = (self.message[start_byte_index] << start_bit_index >> start_bit_index) as u64;
+
+            for &byte in &self.message[(start_byte_index + 1)..(end_byte_index)] {
+                value <<= 8;
+                value |= byte as u64;
+            }
+
+            if end_bit_index > 0 {
+                value <<= end_bit_index;
+                value |= (self.message[end_byte_index] >> (8 - end_bit_index)) as u64;
+            }
+        } else {
+            value = (self.message[start_byte_index] << start_bit_index
+                >> (start_bit_index + 8 - end_bit_index)) as u64
+        }
+
+        self.cursor += length;
+        value
+    }
+
+    fn parse_literal(&mut self) -> u64 {
+        let mut value = 0;
+        loop {
+            let last_group = self.read(1) == 0;
+            value <<= 4;
+            value |= self.read(4);
+            if last_group {
+                return value;
+            }
+        }
+    }
+}
+
+fn parse_packet(bits: &mut Bits) -> Packet {
+    let mut version_sum = bits.read(3);
+    let type_id = bits.read(3);
+
+    if type_id == 4 {
+        return Packet {
+            version_sum,
+            value: bits.parse_literal(),
+        };
+    }
+
+    let mut operands = vec![];
+    let length_type_id = bits.read(1);
+    if length_type_id == 0 {
+        let sub_packets_length = bits.read(15) as usize;
+        let cursor_end_index = bits.cursor + sub_packets_length;
+        while bits.cursor < cursor_end_index {
+            let sub_packet = parse_packet(bits);
+            version_sum += sub_packet.version_sum;
+            operands.push(sub_packet.value);
+        }
+    } else {
+        let sub_packets_count = bits.read(11);
+        for _ in 0..sub_packets_count {
+            let sub_packet = parse_packet(bits);
+            version_sum += sub_packet.version_sum;
+            operands.push(sub_packet.value);
+        }
+    }
+
+    let value = match type_id {
+        0 => operands.into_iter().sum(),
+        1 => operands.into_iter().product(),
+        2 => operands.into_iter().min().unwrap(),
+        3 => operands.into_iter().max().unwrap(),
+        5 => (operands[0] > operands[1]) as u64,
+        6 => (operands[0] < operands[1]) as u64,
+        7 => (operands[0] == operands[1]) as u64,
+        _ => unreachable!(),
+    };
+    Packet { version_sum, value }
 }
 
 fn main() {
@@ -12,88 +105,23 @@ fn main() {
     println!("{}", part2(&input));
 }
 
-fn parse_input() -> String {
+fn parse_input() -> Vec<u8> {
     fs::read_to_string("input.txt")
         .unwrap()
         .trim()
-        .chars()
-        .map(|c| format!("{:04b}", c.to_digit(16).unwrap()))
+        .as_bytes()
+        .chunks(2)
+        .map(|chunk| {
+            (((chunk[0] as char).to_digit(16).unwrap() << 4)
+                | ((chunk[1] as char).to_digit(16).unwrap())) as u8
+        })
         .collect()
 }
 
-fn part1(input: &str) -> u32 {
-    parse_packet(input).version_sum
+fn part1(input: &[u8]) -> u64 {
+    parse_packet(&mut Bits::new(input)).version_sum
 }
 
-fn part2(input: &str) -> u64 {
-    parse_packet(input).value
-}
-
-fn parse_packet(transmission: &str) -> Packet {
-    let mut cursor = 0;
-    let mut version_sum = u32::from_str_radix(&transmission[cursor..(cursor + 3)], 2).unwrap();
-    cursor += 3;
-    let type_id = u8::from_str_radix(&transmission[cursor..(cursor + 3)], 2).unwrap();
-    cursor += 3;
-    if type_id == 4 {
-        let mut value: u64 = 0;
-        loop {
-            let continue_parsing = &transmission[cursor..(cursor + 1)] == "1";
-            cursor += 1;
-            value = value << 4;
-            value += u64::from_str_radix(&transmission[cursor..(cursor + 4)], 2).unwrap();
-            cursor += 4;
-            if !continue_parsing {
-                return Packet {
-                    len: cursor,
-                    version_sum,
-                    value,
-                };
-            }
-        }
-    }
-    let length_type_id = &transmission[cursor..(cursor + 1)];
-    cursor += 1;
-    let mut sub_packet_values = vec![];
-    match length_type_id {
-        "0" => {
-            let sub_packets_length =
-                usize::from_str_radix(&transmission[cursor..(cursor + 15)], 2).unwrap();
-            cursor += 15;
-            let sub_packets_end_index = cursor + sub_packets_length;
-            while cursor < sub_packets_end_index {
-                let sub_packet = parse_packet(&transmission[cursor..sub_packets_end_index]);
-                cursor += sub_packet.len;
-                version_sum += sub_packet.version_sum;
-                sub_packet_values.push(sub_packet.value);
-            }
-        }
-        "1" => {
-            let sub_packets_count =
-                usize::from_str_radix(&transmission[cursor..(cursor + 11)], 2).unwrap();
-            cursor += 11;
-            for _ in 0..sub_packets_count {
-                let sub_packet = parse_packet(&transmission[cursor..]);
-                cursor += sub_packet.len;
-                version_sum += sub_packet.version_sum;
-                sub_packet_values.push(sub_packet.value);
-            }
-        }
-        _ => unreachable!(),
-    }
-    let value = match type_id {
-        0 => sub_packet_values.into_iter().sum(),
-        1 => sub_packet_values.into_iter().product(),
-        2 => sub_packet_values.into_iter().min().unwrap(),
-        3 => sub_packet_values.into_iter().max().unwrap(),
-        5 => (sub_packet_values[0] > sub_packet_values[1]) as u64,
-        6 => (sub_packet_values[0] < sub_packet_values[1]) as u64,
-        7 => (sub_packet_values[0] == sub_packet_values[1]) as u64,
-        _ => unreachable!(),
-    };
-    Packet {
-        len: cursor,
-        version_sum,
-        value,
-    }
+fn part2(input: &[u8]) -> u64 {
+    parse_packet(&mut Bits::new(input)).value
 }
