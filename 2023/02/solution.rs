@@ -64,16 +64,17 @@ fn part2(input: &[Game]) -> u32 {
     input
         .iter()
         .map(|game| {
-            let mut max_pulls = HashMap::<&str, u32>::new();
-            for (colour, &count) in game.pulls.iter().flatten() {
-                max_pulls
-                    .entry(colour)
-                    .and_modify(|x| *x = max(*x, count))
-                    .or_insert(count);
-            }
-            max_pulls.get("red").unwrap_or(&0)
-                * max_pulls.get("green").unwrap_or(&0)
-                * max_pulls.get("blue").unwrap_or(&0)
+            game.pulls
+                .iter()
+                .flatten()
+                .fold([0, 0, 0], |[r, g, b], (colour, &count)| match &colour[..] {
+                    "red" => [max(r, count), g, b],
+                    "green" => [r, max(g, count), b],
+                    "blue" => [r, g, max(b, count)],
+                    _ => panic!(),
+                })
+                .iter()
+                .product::<u32>()
         })
         .sum()
 }
