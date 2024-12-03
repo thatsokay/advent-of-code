@@ -12,25 +12,27 @@ fn parse_input(file_path: OsString) -> Input {
 }
 
 #[derive(Debug, Clone)]
-struct Program<'a> {
-    source: Chars<'a>,
-}
+struct Program<'a>(Chars<'a>);
 
-impl Program<'_> {
+impl<'a> Program<'a> {
+    fn from(source: &'a str) -> Self {
+        Self(source.chars())
+    }
+
     fn advance(&mut self) -> Option<char> {
-        self.source.next()
+        self.0.next()
     }
 
     fn parse_string(&mut self, pattern: &str) -> Option<()> {
         if self
-            .source
+            .0
             .clone()
             .map(|x| Some(x))
             .chain(repeat(None))
             .zip(pattern.chars())
             .all(|(a_option, b)| a_option.and_then(|a| Some(a == b)).unwrap_or(false))
         {
-            self.source.nth(pattern.len() - 1);
+            self.0.nth(pattern.len() - 1);
             Some(())
         } else {
             None
@@ -38,9 +40,9 @@ impl Program<'_> {
     }
 
     fn parse_digits(&mut self) -> Option<u32> {
-        let mut safe_source = self.source.clone();
+        let mut chars = self.0.clone();
         let mut digits = vec![];
-        while let Some(c) = safe_source.next() {
+        while let Some(c) = chars.next() {
             if let Some(d) = c.to_digit(10) {
                 digits.push(d);
             } else {
@@ -48,7 +50,7 @@ impl Program<'_> {
             }
         }
         if digits.len() > 0 {
-            self.source.nth(digits.len() - 1);
+            self.0.nth(digits.len() - 1);
             Some(digits.into_iter().fold(0, |acc, d| acc * 10 + d))
         } else {
             None
@@ -67,9 +69,7 @@ impl Program<'_> {
 }
 
 fn part1(input: &Input) -> u32 {
-    let mut program = Program {
-        source: input.chars(),
-    };
+    let mut program = Program::from(input);
     let mut result = 0;
     loop {
         if let Some(n) = program.parse_mul() {
@@ -82,9 +82,7 @@ fn part1(input: &Input) -> u32 {
 }
 
 fn part2(input: &Input) -> u32 {
-    let mut program = Program {
-        source: input.chars(),
-    };
+    let mut program = Program::from(input);
     let mut enabled = true;
     let mut result = 0;
     loop {
