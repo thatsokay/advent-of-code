@@ -24,14 +24,7 @@ impl<'a> Program<'a> {
     }
 
     fn parse_string(&mut self, pattern: &str) -> Option<()> {
-        if self
-            .0
-            .clone()
-            .map(|x| Some(x))
-            .chain(repeat(None))
-            .zip(pattern.chars())
-            .all(|(a_option, b)| a_option.and_then(|a| Some(a == b)).unwrap_or(false))
-        {
+        if self.0.clone().take(pattern.len()).collect::<String>() == pattern {
             self.0.nth(pattern.len() - 1);
             Some(())
         } else {
